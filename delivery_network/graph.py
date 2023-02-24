@@ -146,12 +146,3 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
-<<<<<<< HEAD
-=======
-   
-    
-
-
-
-
->>>>>>> 15e4b06 (tp 2)
