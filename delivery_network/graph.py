@@ -73,16 +73,36 @@ class Graph:
     def get_path_with_power(self, src, dest, power):
        raise NotImplementedError 
     
+    def voisin(self, a, dv):
+        V=[a]
+        T=self.graph[a]
+        dv[a]=[True]
+        for i in range (len(T)):
+            if dv[T[i][0]] == False:            
+                V.append(T[i][0]) 
+                V= V+self.voisin (T[i][0], dv)
+        return V        
 
     def connected_components(self):
-        raise NotImplementedError
-
+        dv={i:False for i in self.nodes}
+        cc =[]
+        N= list(self.nodes)
+        while len(N) != 0:
+            s=N[0]
+            C= self.voisin(s, dv)
+            cc.append(C)
+            for i in C:
+                N.remove(i)
+        return cc
 
     def connected_components_set(self):
         """
         The result should be a set of frozensets (one per component), 
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
+
+
+
         return set(map(frozenset, self.connected_components()))
     
     def min_power(self, src, dest):
@@ -126,3 +146,12 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
+<<<<<<< HEAD
+=======
+   
+    
+
+
+
+
+>>>>>>> 15e4b06 (tp 2)
