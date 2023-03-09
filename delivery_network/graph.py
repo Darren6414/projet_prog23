@@ -105,7 +105,7 @@ class Graph:
 
 
 
-    def get_path_with_power(self, src, dest, power):
+    def path_power(self, src, dest, power):
         precedent= {i:None for i in self.nodes}
         traiter= {j:False for j in self.nodes}
         distance= {k:float('inf') for k in self.nodes}  
@@ -127,7 +127,14 @@ class Graph:
             a_traiter.sort(reverse=True) 
         return distance, precedent                    
 
-def 
+        
+    def get_path_with_power(self, src, dest, power):
+        d, p = path_power(self, src, dest, power)
+        for i in d.keys():
+            if d[i]==inf:
+                del d[i]
+        return d.keys
+
 
 
 
