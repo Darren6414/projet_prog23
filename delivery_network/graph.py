@@ -55,61 +55,123 @@ class Graph:
         dist: numeric (int or float), optional
             Distance between node1 and node2 on the edge. Default is 1.
         """
-        #on ajoute les noeuds si ils ne sont pas dans le graphe
-        if node1 not in self.graph:
-            self.graph[node1]=[] 
-            self.nb_nodes += 1
-            self.nodes.append(node1)
-
-        if node2 not in self.graph:
-            self.graph[node2]=[] 
-            self.nb_nodes += 1
-            self.nodes.append(node2)   
+#Il faut dans un premier temps verifier que les noeuds sont dans le graph sinon on les ajoutes 
         
-        self.graph[node1].append((node2, power_min, dist))
-        self.graph[node2].append((node1, power_min, dist))
-          
+        if node1 not in self.graph.keys() :
+            self.graph[node1]=[]
+            self.nodes.append(node1)
+            self.nb_nodes +=1
+        if node2 not in self.graph.keys() :
+            self.graph[node2]=[]
+            self.nodes.append(node2)
+            self.nb_nodes +=1
 
-    def get_path_with_power(self, src, dest, power):
-       raise NotImplementedError 
+        self.graph[node1].append((node2, power_min, dist)) #On ajoute la relation a partir de la 1ere extremité de l'arrete 
+        self.graph[node2].append((node1, power_min, dist)) # On ajoute également de l'autre coté ( vice versa)
+        self.nb_edges +=1
     
-    def voisin(self, a, dv):
-        V=[a]
-        T=self.graph[a]
-        dv[a]=[True]
-        for i in range (len(T)):
-            if dv[T[i][0]] == False:            
-                V.append(T[i][0]) 
-                V= V+self.voisin (T[i][0], dv)
-        return V        
-
+    
     def connected_components(self):
-        dv={i:False for i in self.nodes}
-        cc =[]
-        N= list(self.nodes)
-        while len(N) != 0:
-            s=N[0]
-            C= self.voisin(s, dv)
-            cc.append(C)
-            for i in C:
-                N.remove(i)
-        return cc
+        """
+        return a list of all the conected components of a graph
+        """
+        #création d'un dictionnaire permettant de voir si un noeud est visité
+        visited={i:False for i in self.nodes} 
+
+        def exploration(s):
+            #this function return all the nodes of a graph explorated from an initial one
+                L=[s] # list of the connected nodes
+                s_neigh = [self.graph[s][j][0] for j in range(0,len(self.graph[s]))] #list of the node's neighbours
+                for neigh in s_neigh: 
+                    if not visited[neigh] : #for each neighbor not visited
+                        visited[neigh]=True 
+                        L=L+ exploration(neigh) 
+                return L
+
+        Components = []
+        N= self.nodes
+        for node in N :
+            if visited[node]==False : 
+                Components.append(exploration(node))
+        return Components
 
     def connected_components_set(self):
         """
-        The result should be a set of frozensets (one per component), 
+        The result should be a set of frozensets (one per component),
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
+        return set(map(frozenset, self.connected_components()))  
 
 
-
-        return set(map(frozenset, self.connected_components()))
     
+    def get_path_with_power(self, src, dest, power):
+
+        """This function allows you to see if there is a possible path between
+        two nodes for a truck with a given power. If yes, it returns one of the 
+        of the possible paths.
+
+        Args:
+            src (int): source, starting node
+            dest (int): destinantion
+            power (int): power of the truck
+        """
+        explo=[(src,[src])]  # on met d'abord l'endroit d'où on part
+        list_paths = [] # list of the paths between the nodes
+        while explo : 
+            node, path = explo.pop(0) # it allows us to update the paths used
+            n_neigh = [self.graph[node][j] for j in range(0,len(self.graph[node]))] #list of (node's neighbours,powermin,dist)
+            for neighb in n_neigh : 
+                powermin = neighb[1]
+                if neighb[0] not in path and power >= powermin:  #for each neighbor accessible (by truck's power) not yet in the path
+                    if neighb[0] == dest:
+                        list_paths.append(path + [neighb[0]])
+                    else:
+                        explo.append((neighb[0], path + [neighb[0]]))
+        return None if list_paths ==[] else list_paths[0]
+
+    def dijkstra(self, depart):
+        precedent= {i:None for i in self.nodes}
+        traite= {i:False for i in self.nodes}
+        distance= {j:float('inf') for j in self.nodes}  
+        distance[depart] = 0
+        a_traiter = [(0, depart)]
+        while a_traiter:
+
+
+
+
     def min_power(self, src, dest):
         """
+        calculates, for a given journey t, the minimum power of a truck that can cover this journey
         Should return path, min_power. 
+        
+        Args:
+            src (int): source, starting node
+            dest (int): destinantion
+        Output :
+        path (list)
+        min_power (int)
+
         """
-        raise NotImplementedError
+        explo=[((src,0),[src])] # format : [(node,pw_min),[path]]
+        list_paths = [] # list of the paths between the nodes
+        while explo : 
+            node, path = explo.pop(0) # it allows us to update the paths used
+            n_neigh = [self.graph[node[0]][j] for j in range(0,len(self.graph[node[0]]))] #list of (node's neighbours,powermin,dist)
+            for neighb in n_neigh : 
+                powermin = neighb[1]
+                if neighb[0] not in path :  #for each neighbor not yet in the path
+                    if neighb[0] == dest:
+                        list_paths.append((path + [neighb[0]],max(node[1],powermin)))
+                    else:
+                        explo.append(((neighb[0],max(node[1],powermin)), path + [neighb[0]]))
+
+        mini= float('inf')
+        for chm in list_paths : #loop to recover the minimum power
+            if chm[1]<= mini :
+                path_result = chm
+
+        return None if path_result ==[] else path_result[0],path_result[1]
 
 
 def graph_from_file(filename):
@@ -139,7 +201,7 @@ def graph_from_file(filename):
             edge = list(map(int, file.readline().split()))
             if len(edge) == 3:
                 node1, node2, power_min = edge
-                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+                g.add_edge(node1, node2, power_min,1) # will add dist=1 by default
             elif len(edge) == 4:
                 node1, node2, power_min, dist = edge
                 g.add_edge(node1, node2, power_min, dist)
