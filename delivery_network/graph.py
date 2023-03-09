@@ -103,40 +103,31 @@ class Graph:
         return set(map(frozenset, self.connected_components()))  
 
 
-    
+
+
     def get_path_with_power(self, src, dest, power):
-
-        """This function allows you to see if there is a possible path between
-        two nodes for a truck with a given power. If yes, it returns one of the 
-        of the possible paths.
-
-        Args:
-            src (int): source, starting node
-            dest (int): destinantion
-            power (int): power of the truck
-        """
-        explo=[(src,[src])]  # on met d'abord l'endroit d'où on part
-        list_paths = [] # list of the paths between the nodes
-        while explo : 
-            node, path = explo.pop(0) # it allows us to update the paths used
-            n_neigh = [self.graph[node][j] for j in range(0,len(self.graph[node]))] #list of (node's neighbours,powermin,dist)
-            for neighb in n_neigh : 
-                powermin = neighb[1]
-                if neighb[0] not in path and power >= powermin:  #for each neighbor accessible (by truck's power) not yet in the path
-                    if neighb[0] == dest:
-                        list_paths.append(path + [neighb[0]])
-                    else:
-                        explo.append((neighb[0], path + [neighb[0]]))
-        return None if list_paths ==[] else list_paths[0]
-
-    def dijkstra(self, depart):
         precedent= {i:None for i in self.nodes}
-        traite= {i:False for i in self.nodes}
-        distance= {j:float('inf') for j in self.nodes}  
-        distance[depart] = 0
-        a_traiter = [(0, depart)]
-        while a_traiter:
+        traiter= {j:False for j in self.nodes}
+        distance= {k:float('inf') for k in self.nodes}  
+        distance[src] = 0
+        a_traiter = [(0, src)]
+        while a_traiter: 
+            dist_noeud, noeud= a_traiter.pop()
+            if not traiter[noeud] :
+                traiter[noeud] = True
+                neigh = [self.graph[noeud][j] for j in range(0,len(self.graph[noeud]))]
+                for voisin in neigh:
+                    powermin = voisin[1]
+                    if power >= powermin:
+                        dist_voisin = dist_noeud + voisin[2]
+                        if dist_voisin < distance[voisin]:
+                            distance[voisin] = dist_voisin
+                            precedent[voisin] = noeud
+                            a_traiter.append((dist_voisin, voisin))
+            a_traiter.sort(reverse=True) 
+        return distance, precedent                    
 
+def 
 
 
 
