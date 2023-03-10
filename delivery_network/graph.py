@@ -120,20 +120,26 @@ class Graph:
                     powermin = voisin[1]
                     if power >= powermin:
                         dist_voisin = dist_noeud + voisin[2]
-                        if dist_voisin < distance[voisin]:
-                            distance[voisin] = dist_voisin
-                            precedent[voisin] = noeud
-                            a_traiter.append((dist_voisin, voisin))
+                        if dist_voisin < distance[voisin[0]]:
+                            distance[voisin[0]] = dist_voisin
+                            precedent[voisin[0]] = noeud
+                            a_traiter.append((dist_voisin, voisin[0]))
             a_traiter.sort(reverse=True) 
         return distance, precedent                    
 
         
     def get_path_with_power(self, src, dest, power):
-        d, p = path_power(self, src, dest, power)
-        for i in d.keys():
-            if d[i]==inf:
-                del d[i]
-        return d.keys
+        d, p = self.path_power(src, dest, power)
+        if p[dest] == None:
+           return None
+        else:
+           T = [dest]
+           i= dest 
+           while i != src:
+            T.append(p[i])
+            i= p[i]
+        T.reverse()    
+        return T
 
 
 
