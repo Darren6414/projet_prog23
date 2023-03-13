@@ -214,5 +214,5 @@ def graph_from_file(filename):
     return g
 
 
-def kruskal (self):
+
     
