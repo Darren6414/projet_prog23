@@ -105,49 +105,60 @@ tant que le budget est positif >0 :
 ############################################################################
 #######  2nd METHODE : Une sollution optimale du problème  (dynamique)  ####
 ############################################################################
+def Truck(x):
+    # Tout d'abord, on recupere l'utilité max que peut generer chaque camion du catalogue
+    #x=1
+    # recupération des fichiers 
+    route_file = 'input/routes.' + str(x) + '.in'
+    powermin_file = 'input/powermin.' + str(x) + '.in'
+    trucks_file = 'input/trucks.' + str(x) + '.in'
 
-# Tout d'abord, on recupere l'utilité max que peut generer chaque camion du catalogue
-x=1
-# recupération des fichiers 
-route_file = 'input/routes.' + str(x) + '.in'
-powermin_file = 'input/powermin.' + str(x) + '.in'
-trucks_file = 'input/trucks.' + str(x) + '.in'
+    Selection = [] 
+    # Ouverture des fichier et stockage des valeurs dans des listes
+    Trajets = []
+    with open(route_file, "r") as route :
+        with open(powermin_file, "r") as power :
+            n = int(route.readline())
+            for _ in range(n):
 
-Selection = [] 
-# Ouverture des fichier et stockage des valeurs dans des listes
-Trajets = []
-with open(route_file, "r") as route :
-    with open(powermin_file, "r") as power :
-        n = int(route.readline())
-        for _ in range(n):
+                src, dest, utility = map(int, route.readline().split())
+                pwr = int(power.readline())
+                Trajets.append((src, dest, utility, pwr)) 
+                #  il est aussi possible de calculer directement pwr a chaque itération sans passer par lecture des fichier powermin
 
-            src, dest, utility = map(int, route.readline().split())
-            pwr = int(power.readline())
-            Trajets.append((src, dest, utility, pwr)) 
-            #  il est aussi possible de calculer directement pwr a chaque itération sans passer par lecture des fichier powermin
-
-Trucks = []      
-with open(trucks_file, "r") as trucks :   
-    nb_trucks = trucks.readline()
-    for _ in range(int(nb_trucks)) :
-        pow, cost = map(int, trucks.readline().split())
-        umax = 0
-        for trj in Trajets :
-            # si la puissance du c&mion est suffisante et que l'utilité est meilleure on actualise l'utilité max
-            if pow >= trj[3] and umax < trj[2] : 
-                umax = trj[2]
-        # on associe à chaque camion l'utilité max qu'il peut rapporter         
-        Trucks.append((pow, cost, umax))
+    Trucks = []      
+    with open(trucks_file, "r") as trucks :   
+        nb_trucks = trucks.readline()
+        for _ in range(int(nb_trucks)) :
+            pow, cost = map(int, trucks.readline().split())
+            umax = 0
+            for trj in Trajets :
+                # si la puissance du c&mion est suffisante et que l'utilité est meilleure on actualise l'utilité max
+                if pow >= trj[3] and umax < trj[2] : 
+                    umax = trj[2]
+            # on associe à chaque camion l'utilité max qu'il peut rapporter         
+            Trucks.append((pow, cost, umax))
+    return Trucks
 
 print(Trucks)
 
-def opti(B, Trucks):
+
+
+def opti(x, B):
     '''
-    Algorithme de type sac à dos où la capacité du sac est donné par
-    le budget B et les éléments à ranger dans le sac à dos sont les camions, ou plutot
-    leur prix
+    On utilise un algorithme de type sac à dos où la capacité du sac est donnée par le budget B et les éléments à ranger 
+    dans le sac à dos sont les camions en fonction de leurs prix.
+    
+    Cette fonction permet d'effecteur une selection optimale de camion qui va permetre de maximiser 
+    l'utilité sous contrainte de budget. On se concentre sur le réseau d'indice x. 
+    args :
+        x(int)        > indice du réseau
+        Budger(float) > budget disponible
+    output :
+        Selection(list)  > liste de la selection de camion proposée
 
     '''
+    Trucks = Truck(x)
     matrice = [[0 for x in range (B + 1)] for x in range(len(Trucks)+1)] 
     # on ajoute des deux cotés 1 pour pouvoir représenter le cas où le budget est nul et celui où il n'y a aucun camion sélectionné
 
