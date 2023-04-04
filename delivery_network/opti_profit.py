@@ -140,3 +140,34 @@ with open(trucks_file, "r") as trucks :
         Trucks.append((pow, cost, umax))
 
 print(Trucks)
+
+def opti(B, Trucks):
+    '''
+    Algorithme de type sac à dos où la capacité du sac est donné par
+    le budget B et les éléments à ranger dans le sac à dos sont les camions, ou plutot
+    leur prix
+
+    '''
+    matrice = [[0 for x in range (B + 1)] for x in range(len(Trucks)+1)] 
+    # on ajoute des deux cotés 1 pour pouvoir représenter le cas où le budget est nul et celui où il n'y a aucun camion sélectionné
+
+    for i in range(1, len(Trucks) + 1):
+        for w in range(1, B + 1):
+            if Trucks[i-1][1] <= w:
+                matrice[i][w] = max(Trucks[i-1][2] + matrice[i-1][w-Trucks[i-1][1]], matrice[i-1][w])
+            else:
+                matrice[i][w] = matrice[i-1][w]
+
+
+    w = B
+    n = len(Trucks)
+    elements_selection = []
+
+    while w >= 0 and n >= 0:
+        e = elements[n-1]
+        if matrice[n][w] == matrice[n-1][w-e[1]] + e[2]:
+            elements_selection.append(e)
+            w -= e[1]
+
+        n -= 1
+    return matrice[-1][-1], elements_selection
