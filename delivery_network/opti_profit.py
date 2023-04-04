@@ -151,21 +151,32 @@ def opti(B, Trucks):
     matrice = [[0 for x in range (B + 1)] for x in range(len(Trucks)+1)] 
     # on ajoute des deux cotés 1 pour pouvoir représenter le cas où le budget est nul et celui où il n'y a aucun camion sélectionné
 
-    for i in range(1, len(Trucks) + 1):
-        for w in range(1, B + 1):
-            if Trucks[i-1][1] <= w:
+    for i in range(1, len(Trucks) + 1): 
+        # on prend l'indice d'un camion
+        for w in range(1, B + 1): 
+            # on va regarder pour chaque discretisation de notre budget
+            if Trucks[i-1][1] <= w:  
+                # si le prix du camion est inférieur au budget à cette étape on peut ajouter le camion au catalogue
                 matrice[i][w] = max(Trucks[i-1][2] + matrice[i-1][w-Trucks[i-1][1]], matrice[i-1][w])
+                # on prend le max entre l'utilité de la ligne prédédente de la matrice pour le meme budget et l'utilité
+                # du camion choisi auquel on ajoute la solution optimisé pour le budget correspondant au bugdet actuel moins le prix du camion
             else:
+                # sinon quand on ne peut pas acheter le camion on se contente de la sélection faite précedemment pour le budget courant 
                 matrice[i][w] = matrice[i-1][w]
 
-
+    # on va maintenant remonter la matrice afin de trouver la solution optimale du problème i.e la selection optimale de camions ainsi que la flotte de camions sélectionnées
     w = B
     n = len(Trucks)
     elements_selection = []
 
     while w >= 0 and n >= 0:
-        e = elements[n-1]
+        # on parcours la matrice tant que le budget n'est pas épuisé ou tant que les camions sélectionnés n'ont pas tous été 
+        # parcouru en commençant par le dernier élément de la matrice (en bas à droite) correspondant à la sélection optimale
+        e = Trucks[n-1]
         if matrice[n][w] == matrice[n-1][w-e[1]] + e[2]:
+            # on regarde si l'utilité courante ne serait pas la somme des utilités 
+            # du camion sélectionné et de celle obtenu quand le budget est la différence entre
+            # le budget actuel et le prix du camion 
             elements_selection.append(e)
             w -= e[1]
 
