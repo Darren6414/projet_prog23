@@ -83,13 +83,14 @@ def trucks_selection(x, catalogue, Budget = 2000000000000000) :
 
 
 #  LES TEMPS DE CALCULS
-
+"""
 for x in range (1,11):
     t0 = time.perf_counter()
     print(trucks_selection(x,2))
     t1 = time.perf_counter()
     t= t1 - t0
     print (str(x)+ ": " + str(t) )
+"""
 
 """ Output :
 1: 0.02570429899969895
@@ -112,7 +113,7 @@ for x in range (1,11):
 
 
 
-
+print(trucks_selection(7, 2, Budget = 2000000))
 
 """
 pseudo-code  explication : 

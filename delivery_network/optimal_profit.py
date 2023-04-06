@@ -61,7 +61,7 @@ def Truck(x, catalogue):
             Trucks.append((pow, cost, umax)) 
     return Trucks
 
-print(Truck(6,1))
+#print(Truck(6,1))
 
 
 
@@ -99,7 +99,7 @@ def opti(x, catalogue, Budget):
     # on va maintenant remonter la matrice afin de trouver la solution optimale du problème i.e la selection optimale de camions ainsi que la flotte de camions sélectionnées
     n = len(Trucks)
     elements_selection = []
-
+    print(matrice)
     while Budget >= 0 and n >= 0:
         # on parcours la matrice tant que le budget n'est pas épuisé ou tant que les camions sélectionnés n'ont pas tous été 
         # parcouru en commençant par le dernier élément de la matrice (en bas à droite) correspondant à la sélection optimale
@@ -115,7 +115,7 @@ def opti(x, catalogue, Budget):
             n -= 1
         else : 
             utilite_max = matrice[-1][-1]
-            return utilite_max, elements_selection
+            return (utilite_max, elements_selection) if elements_selection != [] else (0, elements_selection)
 
 
-print(opti(1,1,2500000))
+print(opti(3, 1, Budget = 100))
