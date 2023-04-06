@@ -82,7 +82,8 @@ def opti(x, catalogue, Budget):
     Trucks = Truck(x,catalogue)
     matrice = [[0 for x in range (int(Budget + 1))] for x in range(int(len(Trucks)+1))] 
     # on ajoute des deux cotés 1 pour pouvoir représenter le cas où le budget est nul et celui où il n'y a aucun camion sélectionné
-
+    #print(Trucks[0:8])
+    
     for i in range(1, len(Trucks) + 1): 
         # on prend l'indice d'un camion
         for w in range(1, Budget + 1): 
@@ -97,25 +98,30 @@ def opti(x, catalogue, Budget):
                 matrice[i][w] = matrice[i-1][w]
 
     # on va maintenant remonter la matrice afin de trouver la solution optimale du problème i.e la selection optimale de camions ainsi que la flotte de camions sélectionnées
+    w = Budget
     n = len(Trucks)
     elements_selection = []
-    print(matrice)
-    while Budget >= 0 and n >= 0:
+    #print(matrice)
+    
+    while w >= 0 and n >= 0:
         # on parcours la matrice tant que le budget n'est pas épuisé ou tant que les camions sélectionnés n'ont pas tous été 
         # parcouru en commençant par le dernier élément de la matrice (en bas à droite) correspondant à la sélection optimale
         e = Trucks[n-1]
-        if Budget-e[1] >= 0 : 
-            if matrice[n][Budget] == matrice[n-1][Budget-e[1]] + e[2]:
+        if w-e[1] >= 0 : 
+            if matrice[n][w] == matrice[n-1][w-e[1]] + e[2]:
                 # on regarde si l'utilité courante ne serait pas la somme des utilités 
                 # du camion sélectionné et de celle obtenu quand le budget est la différence entre
                 # le budget actuel et le prix du camion 
                 elements_selection.append(e)
-                Budget -= e[1]
+                w -= e[1]
 
             n -= 1
-        else : 
-            utilite_max = matrice[-1][-1]
-            return (utilite_max, elements_selection) if elements_selection != [] else (0, elements_selection)
+        
+    return matrice[-1][-1], elements_selection
+#else : 
+# utilite_max = matrice[-1][-1]
+        #    return utilite_max, elements_selection
+#return (utilite_max, elements_selection) if elements_selection != [] else (0, elements_selection)
 
-
-print(opti(3, 1, Budget = 100))
+#print(opti(1, 0, Budget = 200000000))
+print(opti(2, 1, Budget = 10000))
